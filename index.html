@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Kuis Arisan - KUIS PEMAHAMAN BAHASA INDONESIA</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #0b0c10;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .main-wrapper {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            width: 100%;
+            max-width: 1300px;
+        }
+
+        @media (max-width: 992px) {
+            .main-wrapper {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .container {
+            background-color: #1f2833;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 0 30px rgba(102, 252, 241, 0.2);
+            border: 2px solid #45a29e;
+        }
+
+        .leaderboard-panel {
+            background-color: #1f2833;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 0 30px rgba(102, 252, 241, 0.2);
+            border: 2px solid #66fcf1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #45a29e;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .title {
+            font-size: 1.5rem;
+            color: #66fcf1;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(102,252,241,0.5);
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .stat-box {
+            background: #0b0c10;
+            padding: 8px 12px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid #45a29e;
+            min-width: 80px;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: #c5c6c7;
+            font-weight: bold;
+        }
+
+        .stat-value {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #66fcf1;
+        }
+
+        /* Input Kelompok & Import File */
+        .setup-section {
+            background: #0b0c10;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            border: 1px dashed #45a29e;
+        }
+
+        .row-setup {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .team-input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-grow: 1;
+        }
+
+        .team-input-group label {
+            font-weight: bold;
+            color: #66fcf1;
+            white-space: nowrap;
+            font-size: 0.9rem;
+        }
+
+        .team-input-group input {
+            background: #1f2833;
+            border: 1px solid #45a29e;
+            color: white;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            width: 100%;
+            outline: none;
+        }
+
+        .team-input-group input:focus {
+            border-color: #66fcf1;
+            box-shadow: 0 0 8px rgba(102, 252, 241, 0.5);
+        }
+
+        input[type="file"] { display: none; }
+
+        .btn-upload {
+            background: linear-gradient(135deg, #45a29e, #66fcf1);
+            color: #0b0c10;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 800;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 252, 241, 0.3);
+            white-space: nowrap;
+            font-size: 0.9rem;
+        }
+
+        .btn-upload:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 252, 241, 0.5);
+        }
+
+        /* Timer Controls */
+        .timer-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        /* Quiz Card */
+        .quiz-card {
+            background: #0b0c10;
+            padding: 30px 20px;
+            border-radius: 16px;
+            text-align: center;
+            min-height: 220px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            border: 2px solid #1f2833;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+            position: relative;
+        }
+
+        .question-text {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.4;
+            color: #ffffff;
+        }
+
+        .clue-text {
+            font-size: 2.2rem;
+            color: #ff0055;
+            font-weight: 900;
+            background: #1f2833;
+            padding: 6px 25px;
+            border-radius: 12px;
+            display: inline-block;
+            margin-top: 8px;
+            border: 2px solid #ff0055;
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.4);
+            letter-spacing: 2px;
+        }
+
+        .answer-text {
+            font-size: 1.8rem;
+            color: #00ffcc;
+            font-weight: 900;
+            margin-top: 15px;
+            display: none;
+            border-top: 2px dashed #45a29e;
+            padding-top: 12px;
+            width: 100%;
+            text-shadow: 0 0 10px rgba(0,255,204,0.5);
+        }
+
+        .auto-next-indicator {
+            margin-top: 10px;
+            font-size: 0.85rem;
+            color: #f39c12;
+            font-weight: bold;
+            display: none;
+        }
+
+        /* Control Buttons */
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 10px 16px;
+            font-size: 0.9rem;
+            font-weight: 800;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .btn-start { background: #45a29e; color: white; }
+        .btn-pause { background: #f39c12; color: white; }
+        .btn-reset { background: #555; color: white; }
+        
+        .btn-correct {
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            color: white;
+            font-size: 1rem;
+            box-shadow: 0 4px 15px rgba(56, 239, 125, 0.4);
+        }
+        
+        .btn-wrong {
+            background: linear-gradient(135deg, #cb2d3e, #ef473a);
+            color: white;
+            font-size: 1rem;
+            box-shadow: 0 4px 15px rgba(239, 71, 58, 0.4);
+        }
+        
+        .btn-show { background: #3498db; color: white; }
+        .btn-next { background: #9b59b6; color: white; }
+        .btn-finish { background: #e67e22; color: white; }
+        .btn-clear-lb { background: #c0392b; color: white; font-size: 0.75rem; padding: 6px 10px; }
+
+        button:hover:not(:disabled) {
+            filter: brightness(1.2);
+            transform: translateY(-2px);
+        }
+
+        /* Leaderboard Styles */
+        .lb-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #66fcf1;
+            padding-bottom: 10px;
+        }
+
+        .lb-title {
+            font-size: 1.2rem;
+            color: #66fcf1;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .lb-table-container {
+            max-height: 480px;
+            overflow-y: auto;
+        }
+
+        table.lb-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        table.lb-table th {
+            background: #0b0c10;
+            color: #66fcf1;
+            padding: 10px;
+            position: sticky;
+            top: 0;
+            border-bottom: 1px solid #45a29e;
+        }
+
+        table.lb-table td {
+            padding: 10px;
+            border-bottom: 1px solid #1f2833;
+            background: #0b0c10;
+        }
+
+        table.lb-table tr:nth-child(even) td {
+            background: #141c24;
+        }
+
+        .rank-1 { color: #ffd700; font-weight: bold; font-size: 1.1rem; }
+        .rank-2 { color: #c0c0c0; font-weight: bold; }
+        .rank-3 { color: #cd7f32; font-weight: bold; }
+
+        /* Visual Feedback Pop-up */
+        .feedback-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            pointer-events: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .feedback-overlay.show {
+            opacity: 1;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        .feedback-card {
+            font-size: 3.5rem;
+            font-weight: 900;
+            padding: 25px 50px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+        }
+
+        .feedback-correct {
+            background: rgba(17, 153, 142, 0.95);
+            color: #ffffff;
+            border: 5px solid #38ef7d;
+            box-shadow: 0 0 60px #38ef7d;
+        }
+
+        .feedback-wrong {
+            background: rgba(203, 45, 62, 0.95);
+            color: #ffffff;
+            border: 5px solid #ef473a;
+            box-shadow: 0 0 60px #ef473a;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Modal Score Akhir */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.92);
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+
+        .modal-content {
+            background: #1f2833;
+            padding: 35px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 480px;
+            width: 90%;
+            border: 3px solid #66fcf1;
+            box-shadow: 0 0 40px rgba(102, 252, 241, 0.5);
+        }
+
+        .final-score { 
+            font-size: 4rem; 
+            color: #66fcf1; 
+            margin: 10px 0; 
+            font-weight: 900; 
+            text-shadow: 0 0 20px rgba(102,252,241,0.8);
+        }
+
+        .final-stats {
+            background: #0b0c10;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0 20px 0;
+            border: 1px solid #45a29e;
+            text-align: left;
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Feedback Audio Visual -->
+<div id="feedback" class="feedback-overlay">
+    <div id="feedback-card" class="feedback-card">BENAR!</div>
+</div>
+
+<div class="main-wrapper">
+    <!-- Area Kuis Utama -->
+    <div class="container">
+        <header>
+            <div class="title">⚡  KUIS PEMAHAMAN BAHASA INDONESIA ⚡</div>
+            <div class="stats-bar">
+                <div class="stat-box">
+                    <div class="stat-label">KELOMPOK</div>
+                    <div class="stat-value" id="display-team-name" style="font-size: 1rem; color: #ff0055;">-</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">SISA WAKTU</div>
+                    <div class="stat-value" id="timer">75</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">SKOR</div>
+                    <div class="stat-value" id="score">50</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">TERJAWAB</div>
+                    <div class="stat-value" id="answered-count">0</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Setup Nama & CSV File -->
+        <div class="setup-section">
+            <div class="row-setup">
+                <div class="team-input-group">
+                    <label for="team-name-input">NAMA KELOMPOK:</label>
+                    <input type="text" id="team-name-input" placeholder="Masukkan nama kelompok..." oninput="updateTeamName()">
+                </div>
+                <label for="csv-file" class="btn-upload">📁 Import File CSV/Excel</label>
+                <input type="file" id="csv-file" accept=".csv">
+            </div>
+        </div>
+
+        <!-- Timer Controls -->
+        <div class="timer-controls">
+            <button class="btn-start" id="btn-start-timer" onclick="startTimer()">▶️ Mulai Sesi (75 Detik)</button>
+            <button class="btn-pause" onclick="pauseTimer()">⏸️ Pause</button>
+            <button class="btn-reset" onclick="resetFullSession()">🔄 Reset Sesi Ini</button>
+        </div>
+
+        <!-- Display Soal -->
+        <div class="quiz-card">
+            <div class="question-text" id="question">Silakan Import File CSV & Masukkan Nama Kelompok untuk Memulai</div>
+            <div class="clue-text" id="clue" style="display:none;">---</div>
+            <div class="answer-text" id="answer">---</div>
+            <div class="auto-next-indicator" id="auto-next-indicator">⏳ Lanjut ke soal berikutnya dalam 2 detik...</div>
+        </div>
+
+        <!-- Tombol Aksi -->
+        <div class="action-buttons">
+            <button class="btn-correct" id="btn-correct" onclick="handleAnswer(true)">+10 BENAR 👍</button>
+            <button class="btn-wrong" id="btn-wrong" onclick="handleAnswer(false)">-5 SALAH 👎</button>
+            <button class="btn-show" onclick="revealAnswer()">Buka Jawaban</button>
+            <button class="btn-next" id="btn-next" onclick="manualNextQuestion()">Soal Berikutnya ➔</button>
+            <button class="btn-finish" onclick="finishQuiz()">Selesaikan Kuis</button>
+        </div>
+    </div>
+
+    <!-- Panel Klasemen / Leaderboard -->
+    <div class="leaderboard-panel">
+        <div class="lb-header">
+            <div class="lb-title">🏆 KLASEMEN HARI INI</div>
+            <button class="btn-clear-lb" onclick="clearLeaderboard()">Reset Rekap</button>
+        </div>
+
+        <div class="lb-table-container">
+            <table class="lb-table">
+                <thead>
+                    <tr>
+                        <th>Pos</th>
+                        <th>Kelompok</th>
+                        <th>Skor</th>
+                        <th>B / S</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboard-body">
+                    <tr>
+                        <td colspan="4" style="text-align: center; color: #777;">Belum ada hasil tersimpan.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Pop-up Rekap Akhir -->
+<div class="modal" id="score-modal">
+    <div class="modal-content">
+        <h2 style="color: #66fcf1; font-size: 2rem;">WAKTU HABIS!</h2>
+        <p style="color: #c5c6c7; margin-top: 5px;">Hasil Akhir Kelompok:</p>
+        <h3 id="modal-team-name" style="color: #ff0055; font-size: 1.6rem; margin-top: 8px;">-</h3>
+        
+        <div class="final-score" id="final-score-val">50</div>
+        
+        <div class="final-stats">
+            • <b>Total Dijawab:</b> <span id="modal-total-answered">0</span> Soal<br>
+            • <b>Jawaban Benar:</b> <span id="modal-correct-count" style="color: #38ef7d;">0</span> Soal<br>
+            • <b>Jawaban Salah:</b> <span id="modal-wrong-count" style="color: #ef473a;">0</span> Soal
+        </div>
+
+        <button class="btn-start" style="padding: 14px 25px; font-size: 1.1rem; width: 100%;" onclick="closeModal()">Simpan Hasil & Kelompok Berikutnya ➔</button>
+    </div>
+</div>
+
+<script>
+    let questions = [];
+    let currentIndex = 0;
+    let initialScore = 50; 
+    let score = initialScore;
+    let defaultTime = 75; // Durasi total marathon kelompok
+    let timeLeft = defaultTime;
+    let timerInterval = null;
+    let autoNextTimeout = null;
+
+    let correctCount = 0;
+    let wrongCount = 0;
+    let answeredCount = 0;
+    let isAnsweredCurrent = false;
+
+    // Leaderboard Array
+    let leaderboardData = JSON.parse(localStorage.getItem('arisan_leaderboard') || '[]');
+
+    const questionEl = document.getElementById('question');
+    const clueEl = document.getElementById('clue');
+    const answerEl = document.getElementById('answer');
+    const scoreEl = document.getElementById('score');
+    const timerEl = document.getElementById('timer');
+    const answeredCountEl = document.getElementById('answered-count');
+    const teamNameInput = document.getElementById('team-name-input');
+    const displayTeamName = document.getElementById('display-team-name');
+    const autoNextIndicator = document.getElementById('auto-next-indicator');
+    const btnCorrect = document.getElementById('btn-correct');
+    const btnWrong = document.getElementById('btn-wrong');
+    const leaderboardBody = document.getElementById('leaderboard-body');
+
+    // Synthesizer Audio
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+
+    function initAudio() {
+        if (!audioCtx) audioCtx = new AudioContext();
+    }
+
+    function playCorrectSound() {
+        initAudio();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, idx) => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime + idx * 0.08);
+            gain.gain.setValueAtTime(0, audioCtx.currentTime + idx * 0.08);
+            gain.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + idx * 0.08 + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + idx * 0.08 + 0.4);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(audioCtx.currentTime + idx * 0.08);
+            osc.stop(audioCtx.currentTime + idx * 0.08 + 0.45);
+        });
+    }
+
+    function playWrongSound() {
+        initAudio();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const freqs = [160, 110];
+        freqs.forEach((freq, idx) => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime + idx * 0.15);
+            gain.gain.setValueAtTime(0, audioCtx.currentTime + idx * 0.15);
+            gain.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + idx * 0.15 + 0.03);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + idx * 0.15 + 0.35);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(audioCtx.currentTime + idx * 0.15);
+            osc.stop(audioCtx.currentTime + idx * 0.15 + 0.4);
+        });
+    }
+
+    function updateTeamName() {
+        const name = teamNameInput.value.trim();
+        displayTeamName.innerText = name ? name : "-";
+    }
+
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    function loadQuestion() {
+        if (questions.length === 0) return;
+        
+        clearTimeout(autoNextTimeout);
+        autoNextIndicator.style.display = 'none';
+        isAnsweredCurrent = false;
+        
+        btnCorrect.disabled = false;
+        btnWrong.disabled = false;
+
+        const current = questions[currentIndex];
+        questionEl.innerText = current.q;
+        clueEl.innerText = current.clue;
+        clueEl.style.display = 'inline-block';
+        
+        answerEl.innerText = "Jawaban: " + current.a;
+        answerEl.style.display = 'none';
+    }
+
+    function revealAnswer() {
+        if (questions.length > 0) answerEl.style.display = 'block';
+    }
+
+    function handleAnswer(isCorrect) {
+        if (questions.length === 0 || isAnsweredCurrent || timeLeft <= 0) return;
+
+        isAnsweredCurrent = true;
+        btnCorrect.disabled = true;
+        btnWrong.disabled = true;
+        
+        answeredCount++;
+        answeredCountEl.innerText = answeredCount;
+
+        if (isCorrect) {
+            score += 10;
+            correctCount++;
+            playCorrectSound();
+            showVisualFeedback('BENAR! +10', 'feedback-correct');
+        } else {
+            score -= 5;
+            wrongCount++;
+            playWrongSound();
+            showVisualFeedback('SALAH! -5', 'feedback-wrong');
+        }
+
+        scoreEl.innerText = score;
+        revealAnswer();
+
+        autoNextIndicator.style.display = 'block';
+        autoNextTimeout = setTimeout(() => {
+            nextQuestion();
+        }, 2000);
+    }
+
+    function showVisualFeedback(text, className) {
+        const feedbackEl = document.getElementById('feedback');
+        const feedbackCardEl = document.getElementById('feedback-card');
+        feedbackCardEl.innerText = text;
+        feedbackCardEl.className = 'feedback-card ' + className;
+        feedbackEl.classList.add('show');
+
+        setTimeout(() => {
+            feedbackEl.classList.remove('show');
+        }, 800);
+    }
+
+    function manualNextQuestion() {
+        clearTimeout(autoNextTimeout);
+        nextQuestion();
+    }
+
+    function nextQuestion() {
+        if (questions.length === 0) return;
+        if (currentIndex < questions.length - 1) {
+            currentIndex++;
+            loadQuestion();
+        } else {
+            finishQuiz();
+        }
+    }
+
+    function startTimer() {
+        initAudio();
+        if (questions.length === 0) {
+            alert("Harap impor file CSV/Excel terlebih dahulu!");
+            return;
+        }
+
+        if (!teamNameInput.value.trim()) {
+            alert("Harap masukkan Nama Kelompok terlebih dahulu!");
+            teamNameInput.focus();
+            return;
+        }
+
+        if (timerInterval) return;
+
+        timerInterval = setInterval(() => {
+            if (timeLeft > 0) {
+                timeLeft--;
+                timerEl.innerText = timeLeft;
+            } else {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                playWrongSound();
+                finishQuiz();
+            }
+        }, 1000);
+    }
+
+    function pauseTimer() {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        clearTimeout(autoNextTimeout);
+    }
+
+    function resetFullSession() {
+        pauseTimer();
+        clearTimeout(autoNextTimeout);
+        timeLeft = defaultTime;
+        timerEl.innerText = timeLeft;
+        score = initialScore;
+        scoreEl.innerText = score;
+        
+        correctCount = 0;
+        wrongCount = 0;
+        answeredCount = 0;
+        answeredCountEl.innerText = 0;
+
+        if (questions.length > 0) {
+            questions = shuffleArray(questions);
+            currentIndex = 0;
+            loadQuestion();
+        }
+    }
+
+    function finishQuiz() {
+        pauseTimer();
+        clearTimeout(autoNextTimeout);
+
+        document.getElementById('modal-team-name').innerText = teamNameInput.value.trim() || "Kelompok Tanpa Nama";
+        document.getElementById('final-score-val').innerText = score;
+        document.getElementById('modal-total-answered').innerText = answeredCount;
+        document.getElementById('modal-correct-count').innerText = correctCount;
+        document.getElementById('modal-wrong-count').innerText = wrongCount;
+
+        document.getElementById('score-modal').style.display = 'flex';
+    }
+
+    function closeModal() {
+        // Save score to leaderboard
+        const teamName = teamNameInput.value.trim() || "Kelompok Tanpa Nama";
+        
+        leaderboardData.push({
+            name: teamName,
+            score: score,
+            correct: correctCount,
+            wrong: wrongCount,
+            answered: answeredCount,
+            timestamp: new Date().getTime()
+        });
+
+        // Sort descending by score, then by correct answers
+        leaderboardData.sort((a, b) => b.score - a.score || b.correct - a.correct);
+
+        localStorage.setItem('arisan_leaderboard', JSON.stringify(leaderboardData));
+        renderLeaderboard();
+
+        document.getElementById('score-modal').style.display = 'none';
+        teamNameInput.value = '';
+        updateTeamName();
+        resetFullSession();
+    }
+
+    function renderLeaderboard() {
+        if (leaderboardData.length === 0) {
+            leaderboardBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #777;">Belum ada hasil tersimpan.</td></tr>';
+            return;
+        }
+
+        let html = '';
+        leaderboardData.forEach((item, idx) => {
+            let rankClass = '';
+            let medal = idx + 1;
+            if (idx === 0) { rankClass = 'rank-1'; medal = '🥇 1'; }
+            else if (idx === 1) { rankClass = 'rank-2'; medal = '🥈 2'; }
+            else if (idx === 2) { rankClass = 'rank-3'; medal = '🥉 3'; }
+
+            html += `
+                <tr>
+                    <td class="${rankClass}">${medal}</td>
+                    <td style="font-weight: bold; color: #fff;">${item.name}</td>
+                    <td style="font-weight: 800; color: #66fcf1;">${item.score}</td>
+                    <td style="font-size: 0.8rem;"><span style="color:#38ef7d;">${item.correct}</span> / <span style="color:#ef473a;">${item.wrong}</span></td>
+                </tr>
+            `;
+        });
+        leaderboardBody.innerHTML = html;
+    }
+
+    function clearLeaderboard() {
+        if (confirm("Apakah Anda yakin ingin menghapus seluruh daftar hasil kelompok?")) {
+            leaderboardData = [];
+            localStorage.removeItem('arisan_leaderboard');
+            renderLeaderboard();
+        }
+    }
+
+    // Load Initial Leaderboard
+    renderLeaderboard();
+
+    // Parser CSV
+    document.getElementById('csv-file').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+            const lines = evt.target.result.split(/\r\n|\n/);
+            let parsedQuestions = [];
+
+            lines.forEach(line => {
+                if (!line.trim()) return;
+                
+                let delimiter = line.includes(';') ? ';' : ',';
+                let parts = line.split(delimiter);
+
+                if (parts[0].toLowerCase().includes('no') || parts[0].toLowerCase().includes('pertanyaan')) {
+                    if (parts.length >= 4 && parts[1].toLowerCase().includes('pertanyaan')) return;
+                }
+
+                if (parts.length >= 4) {
+                    parsedQuestions.push({
+                        q: parts[1].replace(/^"|"$/g, '').trim(),
+                        clue: parts[2].replace(/^"|"$/g, '').trim(),
+                        a: parts[3].replace(/^"|"$/g, '').trim()
+                    });
+                } else if (parts.length >= 3) {
+                    parsedQuestions.push({
+                        q: parts[0].replace(/^"|"$/g, '').trim(),
+                        clue: parts[1].replace(/^"|"$/g, '').trim(),
+                        a: parts[2].replace(/^"|"$/g, '').trim()
+                    });
+                }
+            });
+
+            if (parsedQuestions.length > 0) {
+                questions = shuffleArray(parsedQuestions);
+                resetFullSession();
+                alert(`Berhasil mengimpor ${questions.length} soal! Siap dimainkan.`);
+            } else {
+                alert("Gagal membaca soal. Pastikan format CSV sesuai.");
+            }
+        };
+        reader.readAsText(file);
+    });
+</script>
+</body>
+</html>
